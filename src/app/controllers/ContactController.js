@@ -33,7 +33,7 @@ class ContactController {
 
     if(contactExists) {
       return res.status(400).json(
-        { error: 'This email is already been taken' }
+        { error: 'This email is already in use' }
       );
     };
 
@@ -44,8 +44,34 @@ class ContactController {
     res.json(contact);
   }
 
-  update() {
+  async update(req, res) {
     // Editar um registro
+    const { id } = req.params;
+    const { name, email, phone, category_id } = req.body;
+
+    const contactExists = await ContactReporsitory.findById(id);
+    if(!contactExists) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if(!name) {
+      return res.status(400).json(
+        { error: 'Name is required' }
+      );
+    }
+
+    const contactByEmail = await ContactReporsitory.findByEmail(email);
+    if(contactByEmail && contactByEmail.id !== id) {
+      return res.status(400).json(
+        { error: 'This email is already in use' }
+      );
+    };
+
+    const contact = await ContactReporsitory.update(id, {
+      name, email, phone, category_id,
+    });
+
+    res.json(contact);
   }
 
   async delete(req, res) {
