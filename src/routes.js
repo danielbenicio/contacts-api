@@ -7,7 +7,7 @@ const router = Router();
 
 router.get(
   '/contacts',
-    (req, res, next) => { //Middlewares
+    (req, res, next) => {
     req.appId = 'MeuAppID';
     next();
   },
